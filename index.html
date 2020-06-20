@@ -14,7 +14,7 @@
 			}
 			.title{
 				width: 100%;
-				max-height: 900px;
+				max-height: 1000px;
 				height: 100vh;
 				display: flex;
 				align-items: center;
@@ -25,8 +25,8 @@
 			}
 			.parent {
 				width: 100vw;
-				max-height: 900px;
-				height: 100vh;
+				max-height: 1300px;
+				height: 130vh;
 				margin-top:40px;
 				padding: 30px;
 				box-sizing: border-box;
@@ -113,14 +113,14 @@
 			<span class="wow bounceInDown" data-wow-duration="1.5s" data-wow-delay="0.8s">示</span>
 		</div>
 		<div class="fixed">
-			<div class="item" onclick="to1()">top</div>
-			<div class="item" onclick="to1('fade')">淡入类</div>
-			<div class="item" onclick="to1('fadeOut')">淡出类</div>
-			<div class="item" onclick="to1('bounce')">弹跳类</div>
-			<div class="item" onclick="to1('zoom')">缩放类</div>
-			<div class="item" onclick="to1('rotate')">旋转类</div>
-			<div class="item" onclick="to1('flip')">翻转类</div>
-			<div class="item" onclick="to1('strong')">强调类</div>
+			<div class="item" onclick="goto()">top</div>
+			<div class="item" onclick="goto('fade')">淡入类</div>
+			<div class="item" onclick="goto('fadeOut')">淡出类</div>
+			<div class="item" onclick="goto('bounce')">弹跳类</div>
+			<div class="item" onclick="goto('zoom')">缩放类</div>
+			<div class="item" onclick="goto('rotate')">旋转类</div>
+			<div class="item" onclick="goto('flip')">翻转类</div>
+			<div class="item" onclick="goto('strong')">强调类</div>
 		</div>
 		<div class="parent" id="fade">
 			<div class="box wow fadeIn" id="fadeIn" onclick="show(event)" data-wow-duration="1.5s" data-wow-delay="0.7s"> fadeIn</div>
@@ -218,26 +218,67 @@
 			wow.init();
 		</script>
 		<script>
-			function show(e){
-				let old = e.target.className
-				var wow = new WOW({
-				    boxClass: "box1",		 //需要执行动画的元素的 class
-				    animateClass: 'animated',//animation.css 动画的 class
-				    offset: 0,	 			 //距离可视区域多少开始执行动画
-				    mobile: true,			 //是否在移动设备上执行动画
-				    live: true 	 			 //异步加载的内容是否有效
-				});
-				e.target.className = "box1"
-				wow.init();//改进版wow.js  http://www.jeendo.com/script/wow/wow.min2.js
-				e.target.className = old
-			}
-		function to1(id){
-			if(!document.getElementById(id)){
+		function show(e){
+			let old = e.target.className
+			var wow = new WOW({
+				boxClass: "box1",		 //需要执行动画的元素的 class
+				animateClass: 'animated',//animation.css 动画的 class
+				offset: 0,	 			 //距离可视区域多少开始执行动画
+				mobile: true,			 //是否在移动设备上执行动画
+				live: true 	 			 //异步加载的内容是否有效
+			});
+			e.target.className = "box1"
+			wow.init();//改进版wow.js  http://www.jeendo.com/script/wow/wow.min2.js
+			e.target.className = old
+		}
+		function goto(id){
+			console.log(id)
+			let el = document.getElementById(id)
+			if(!el){
 				document.getElementById('title').scrollIntoView({ behavior:'smooth' })
 				return
 			}
-			document.getElementById(id).scrollIntoView({ behavior:'smooth' })
+			el.scrollIntoView({ behavior:'smooth' })
 		}
+		
+		(function(){ //监听页面滚动
+			var scop = document.documentElement.scrollTop;
+			console.log(scop)
+			window.addEventListener('scroll', updateNav);
+		})();
+		
+		function updateNav(e){//页面滚动回调
+			var top = document.documentElement.scrollTop;
+			console.log(top)
+			localStorage.setItem('scrollTop',top)
+		}
+
+		window.onload=function(){
+			setTimeout(()=>{
+				let top = Number(localStorage.getItem('scrollTop'))
+				console.log(top)
+				ScrollTop(top,1500)
+			},100)
+		}
+		function ScrollTop(number = 0, time) { //页面滚动到指定位置
+		    if (!time) {
+		        document.body.scrollTop = document.documentElement.scrollTop = number;
+		        return number;
+		    }
+		    const spacingTime = 20; // 设置循环的间隔时间  值越小消耗性能越高
+		    let spacingInex = time / spacingTime; // 计算循环的次数
+		    let nowTop = document.body.scrollTop + document.documentElement.scrollTop; // 获取当前滚动条位置
+		    let everTop = (number - nowTop) / spacingInex; // 计算每次滑动的距离
+		    let scrollTimer = setInterval(() => {
+		        if (spacingInex > 0) {
+		            spacingInex--;
+		            ScrollTop(nowTop += everTop);
+		        } else {
+		            clearInterval(scrollTimer); // 清除计时器
+		        }
+		    }, spacingTime);
+		};
+
 		</script>
 	</body>
 </html>
